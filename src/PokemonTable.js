@@ -79,11 +79,11 @@ const reducer = (state, { type, payload }) => {
     case TOTAL_COUNT_CHANGED:
       console.log(
         "Total count changed to be - ",
-        payload["x-pagination-total-count"]
+        payload
       );
       return {
         ...state,
-        totalCount: Number(payload["x-pagination-total-count"]),
+        totalCount: Number(payload),
       };
     default:
       throw new Error(`Unhandled action type: ${type}`);
@@ -149,20 +149,25 @@ function PokemonTable() {
     gotoPage(0);
   }, [pageSize, gotoPage]);
 
-  React.useEffect(() => {
-    console.log("Data updated -", data?.data.length);
-    if (paginationCount) {
-      dispatch({
-        type: TOTAL_COUNT_CHANGED,
-        payload: paginationCount,
-      });
-    }
-  }, [headers]);
+  // React.useEffect(() => {
+  //   console.log("Data updated -", headers['x-pagination-total-count']);
+  //   if (headers['x-pagination-total-count']) {
+  //     dispatch({
+  //       type: TOTAL_COUNT_CHANGED,
+  //       payload: headers['x-pagination-total-count'],
+  //     });
+  //   }
+  // }, [headers]);
 
   React.useEffect(() => {
     console.log("DataList in useEffect:", JSON.stringify(dataList));
     console.log("Headers in useEffect:", headers);
-    setPaginationCount(headers["x-pagination-total-count"]);
+    console.log("Headers total count in useEffect:", headers["x-pagination-total-count"]);
+    dispatch({
+      type: TOTAL_COUNT_CHANGED,
+      payload: headers['x-pagination-total-count'],
+    });
+    // setPaginationCount(headers["x-pagination-total-count"]);
   }, [dataList, headers]);
 
   if (error) {
