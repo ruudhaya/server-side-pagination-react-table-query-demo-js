@@ -77,23 +77,19 @@ const reducer = (state, { type, payload }) => {
         queryPageSize: payload,
       };
     case TOTAL_COUNT_CHANGED:
-      console.log(
-        "Total count changed to be - ",
-        payload["x-pagination-total-count"]
-      );
+      console.log("Total count changed to be - ", payload);
       return {
         ...state,
-        totalCount: Number(payload["x-pagination-total-count"]),
+        totalCount: Number(payload),
       };
     default:
       throw new Error(`Unhandled action type: ${type}`);
   }
 };
 
-function PokemonTable() {
+function FreshTable() {
   const [dataList, setDataList] = useState([]);
-  const [headers, setHeaders] = useState({});
-  const [paginationCount, setPaginationCount] = useState("");
+  const [headers, setHeaders] = useState("");
   const [{ queryPageIndex, queryPageSize, totalCount }, dispatch] =
     React.useReducer(reducer, initialState);
 
@@ -126,7 +122,7 @@ function PokemonTable() {
   } = useTable(
     {
       columns,
-      data: isSuccess ? trimData(dataList) : [],
+      data: isSuccess ? dataList : [],
       initialState: {
         pageIndex: queryPageIndex,
         pageSize: queryPageSize,
@@ -151,18 +147,17 @@ function PokemonTable() {
 
   React.useEffect(() => {
     console.log("Data updated -", data?.data.length);
-    if (paginationCount) {
+    if (data?.data?.length) {
       dispatch({
         type: TOTAL_COUNT_CHANGED,
-        payload: paginationCount,
+        payload: data.data.length,
       });
     }
-  }, [headers]);
+  }, [data]);
 
   React.useEffect(() => {
     console.log("DataList in useEffect:", JSON.stringify(dataList));
-    console.log("Headers in useEffect:", headers);
-    setPaginationCount(headers["x-pagination-total-count"]);
+    console.log("Headers in useEffect:", headers["x-pagination-per-page"]);
   }, [dataList, headers]);
 
   if (error) {
@@ -258,4 +253,4 @@ function PokemonTable() {
   );
 }
 
-export default PokemonTable;
+export default FreshTable;
